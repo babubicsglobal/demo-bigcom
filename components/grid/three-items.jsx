@@ -1,36 +1,22 @@
 "use client"; // This is a client component
 import { client } from "@/lib/contentful/client";
 import React, { useState, useEffect } from "react";
-import { bigcommerceClient } from "@/lib/bigcommerce/auth";
-import { Management } from "@space48/bigcommerce-api";
+import axios from 'axios';
 
-const bigCommerce = new Management.Client({
-  storeHash: "vsswcwmpjr",
-  accessToken: "dgtsnbwbi2gvbewborkhqv8hi7ybxv2",
-});
+const getBigcomProducts= async ()=> {
+  const result = await axios.get("api/bigcomProducts")
+  console.log("bigcommerce products", result);
+}
 
 export default function ThreeItemGrid() {
   const getCommerceProduct = async () => {
     const response = await client.getEntries({ content_type: "product" });
-    console.log("products", response.items);
+    console.log("contentful products", response.items);
   };
 
-  async function printAllProducts() {
-    // list() sends one HTTP request at a time and only sends requests as the iterator is consumed
-    const products = bigCommerce.v3.list("/catalog/products", {
-      query: { include: ["images"] },
-    });
-    for await (const product of products) {
-      console.dir(product);
-    }
-  }
-  bigcommerceClient.get("/catalog/products").then((data) => {
-    console.log(data, "data");
-  });
-
   useEffect(() => {
+    getBigcomProducts();
     getCommerceProduct();
-    printAllProducts();
   }, []);
   return (
     <section className="lg:grid lg:grid-cols-6 lg:grid-rows-2">
